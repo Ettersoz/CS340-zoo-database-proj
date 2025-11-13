@@ -5,7 +5,7 @@ function EnclosureAssignmentsPage(){
     return(
         <>
             <h1>EnclosureAssignments:</h1>
-            <GetData entity={"EnclosureAssignments"}></GetData>
+            <GetData entity={"Assignments"}></GetData>
             <button>Add EnclosureAssignment</button>
         </>    
     )

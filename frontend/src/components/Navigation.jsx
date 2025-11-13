@@ -8,7 +8,7 @@ function Navigation(){
             <Link to='/enclosures'>Enclosures </Link>
             <Link to='/species'>Species </Link>
             <Link to='/zookeepers'>Zookeepers </Link>
-            <Link to='/enclosureassignments'>Zookeepers </Link>
+            <Link to='/enclosureassignments'>Enclosure Assignments </Link>
         </nav>
     )
 }
