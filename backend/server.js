@@ -60,6 +60,30 @@ app.get('/api/Animals', async (req, res) => {
     }
 });
 
+// Update an animal by ID
+app.put('/api/Animals/:id', async (req, res) => {
+    try {
+        const animalId = req.params.id;
+        const { name, dateOfBirth, sex, speciesId, enclosureId } = req.body;
+
+        const query = `
+            UPDATE Animals
+            SET name = ?, dateOfBirth = ?, sex = ?, speciesId = ?, enclosureId = ?
+            WHERE animalId = ?;
+        `;
+        const [result] = await db.query(query, [name, dateOfBirth, sex, speciesId, enclosureId, animalId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send("Animal not found");
+        }
+
+        res.status(200).send("Animal updated successfully");
+    } catch (error) {
+        console.error("Error updating animal:", error);
+        res.status(500).send("Error updating animal");
+    }
+});
+
 // Get all zookeepers
 app.get('/api/Zookeepers', async (req, res) => {
     try {
@@ -69,6 +93,30 @@ app.get('/api/Zookeepers', async (req, res) => {
     } catch (error) {
         console.error("Error fetching zookeepers:", error);
         res.status(500).send("Error fetching zookeepers");
+    }
+});
+
+// Update a zookeeper by ID
+app.get('/api/Zookeepers:id', async (req, res) => {
+    try {
+        const keeperId = req.params.id;
+        const { firstName, lastName, hireDate, specialty } = req.body;
+
+        const query = `
+            UPDATE Zookeepers
+            SET firstName = ?, lastName = ?, hireDate = ?, specialty = ?
+            WHERE keeperId = ?;
+        `;
+        const [result] = await db.query(query, [firstName, lastName, hireDate, specialty, keeperId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send("Zookeeper not found");
+        }
+
+        res.status(200).send("Zookeeper updated successfully");
+    } catch (error) {
+        console.error("Error updating zookeeper:", error);
+        res.status(500).send("Error updating zookeeper");
     }
 });
 
@@ -84,6 +132,29 @@ app.get('/api/Enclosures', async (req, res) => {
     }
 });
 
+// Update an enclosure by ID
+app.get('/api/Enclosures/:id', async (req, res) => {
+    try {
+        const enclosureId = req.params.id;
+        const { enclosureType, location, maximumCapacity } = req.body;
+        
+        const query = `UPDATE Enclosures
+                       SET enclosureType = ?, location = ?, maximumCapacity = ?
+                       WHERE enclosureId = ?;`;
+
+        const [result] = await db.query(query, [enclosureType, location, maximumCapacity, enclosureId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send("Enclosure not found");
+        }
+
+        res.status(200).send("Enclosure updated successfully");
+    } catch (error) {
+        console.error("Error updating enclosure:", error);
+        res.status(500).send("Error updating enclosure");
+    }
+});
+
 // Get all species
 app.get('/api/Species', async (req, res) => {
     try {
@@ -93,6 +164,29 @@ app.get('/api/Species', async (req, res) => {
     } catch (error) {
         console.error("Error fetching species:", error);
         res.status(500).send("Error fetching species");
+    }
+});
+
+// Update a species by ID
+app.get('/api/Species/:id', async (req, res) => {
+    try {
+        const speciesId = req.params.id;
+        const { name, scientificName, diet, vertType } = req.body;
+        
+        const query = `UPDATE Species
+                       SET name = ?, scientificName = ?, diet = ?, vertType = ?
+                       WHERE speciesId = ?;`;
+
+        const [result] = await db.query(query, [name, scientificName, diet, vertType, speciesId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send("Species not found");
+        }
+
+        res.status(200).send("Species updated successfully");
+    } catch (error) {
+        console.error("Error updating species:", error);
+        res.status(500).send("Error updating species");
     }
 });
 
@@ -121,6 +215,30 @@ app.get('/api/Assignments', async (req, res) => {
     }
 });
 
+// Update an enclosure assignment
+app.put('/api/Assignments/:keeperId/:enclosureId', async (req, res) => {
+    try {
+        const { keeperId, enclosureId } = req.params;
+        const { newKeeperId, newEnclosureId } = req.body;
+        
+        const query = `
+            UPDATE EnclosureAssignments 
+            SET keeperId = ?, enclosureId = ?
+            WHERE keeperId = ? AND enclosureId = ?
+        `;
+        
+        const [result] = await db.query(query, [newKeeperId, newEnclosureId, keeperId, enclosureId]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).send("Assignment not found");
+        }
+        
+        res.status(200).json({ message: "Assignment updated successfully" });
+    } catch (error) {
+        console.error("Error updating assignment:", error);
+        res.status(500).send("Error updating assignment");
+    }
+});
 
 // Tell express what port to listen on 
 const server = app.listen(PORT, function () {
