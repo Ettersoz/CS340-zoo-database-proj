@@ -8,27 +8,27 @@ function GetData({ entity }) {
     const [error, setError] = useState(null);
     const [editingRecord, setEditingRecord] = useState(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch(`${BACKEND_URL}/api/${entity}`);
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch ${entity}: ${response.status}`);
-                }
-                
-                const rows = await response.json();
-                setData(rows);
-                setError(null);
-            } catch (err) {
-                setError(err.message);
-                setData([]);
-            } finally {
-                setLoading(false);
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${BACKEND_URL}/api/${entity}`);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch ${entity}: ${response.status}`);
             }
-        };
+            
+            const rows = await response.json();
+            setData(rows);
+            setError(null);
+        } catch (err) {
+            setError(err.message);
+            setData([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchData();
     }, [entity]);
 
@@ -40,10 +40,10 @@ function GetData({ entity }) {
         setEditingRecord(null);
     };
 
-    const handleSaveEdit = () => {
+    const handleSaveEdit = async () => {
         setEditingRecord(null);
-        fetchData(); // Refresh data 
-    }
+        await fetchData(); // Refresh data
+    };
 
     if (loading) return <p>Loading {entity}...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -58,7 +58,7 @@ function GetData({ entity }) {
                     entity={entity}
                     record={editingRecord}
                     onCancel={handleCancelEdit}
-                    onUpdate={handleSaveEdit}
+                    onSave={handleSaveEdit}
                 />
             )}
             <table border="1" cellPadding="10">

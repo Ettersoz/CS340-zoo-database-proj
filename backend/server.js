@@ -40,6 +40,8 @@ app.get('/api/Animals', async (req, res) => {
                 a.name,
                 a.dateOfBirth,
                 a.sex,
+                a.speciesId,
+                a.enclosureId,
                 s.name AS speciesName,
                 s.scientificName,
                 s.diet,
