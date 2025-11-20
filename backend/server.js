@@ -20,7 +20,7 @@ const app = express();
 const cors = require('cors');
 
 // Set a port in the range: 1024 < PORT < 65535
-const PORT = 8373;
+const PORT = 8375;
 
 
 // If on FLIP or classwork, use cors() middleware to allow cross-origin requests from the frontend with your port number:
@@ -30,6 +30,8 @@ app.use(cors({ credentials: true, origin: "*" }));
 app.use(express.json()); // this is needed for post requests, good thing to know
             
 // Route handler 
+
+// these all should be refactored to use stored procesdures!! 
 
 // Get all animals with their species and enclosure info
 app.get('/api/Animals', async (req, res) => {
