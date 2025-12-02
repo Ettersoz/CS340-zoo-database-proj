@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import BACKEND_URL from "../assets/url"  
-import { use } from "react";
-function EditForm({ entity, record, onCancel, onSave }) {
-    const [formData, setFormData] = useState({ ...record });
-    const [error, setError] = useState(null);
+import BACKEND_URL from "../assets/url";
 
+function AddForm({ entity, onCancel, onSave }) {
+    const [formData, setFormData] = useState({});
+    const [error, setError] = useState(null);
     const [species, setSpecies] = useState([]);
     const [enclosures, setEnclosures] = useState([]);
     const [zookeepers, setZookeepers] = useState([]);
@@ -37,25 +36,10 @@ function EditForm({ entity, record, onCancel, onSave }) {
         fetchDropdownData();
     }, [entity]);
 
-    useEffect(() => {
-    // Convert date fields from ISO to YYYY-MM-DD format for input fields
-    const convertedData = { ...record };
-    
-    if (convertedData.dateOfBirth) {
-        convertedData.dateOfBirth = convertedData.dateOfBirth.split('T')[0];
-    }
-    if (convertedData.hireDate) {
-        convertedData.hireDate = convertedData.hireDate.split('T')[0];
-    }
-    
-    setFormData(convertedData);
-}, [record]);
-
-    // Fixed: Correct field names for each entity
-    const editableFields = {
+    const addableFields = {
         'Animals': ['name', 'dateOfBirth', 'sex', 'speciesId', 'enclosureId'],
-        'Zookeepers': ['firstName', 'lastName', 'hireDate', 'speciality'], // REMOVED phoneNumber
-        'Enclosures': ['enclosureType', 'location', 'maximumCapacity'], // FIXED: was 'capacity'
+        'Zookeepers': ['firstName', 'lastName', 'hireDate', 'speciality'],
+        'Enclosures': ['enclosureType', 'location', 'maximumCapacity'],
         'Species': ['name', 'scientificName', 'diet', 'vertType'],
         'Assignments': ['keeperId', 'enclosureId']
     };
@@ -68,81 +52,29 @@ function EditForm({ entity, record, onCancel, onSave }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Fixed: Map entity names to their correct ID field names
-            const idFieldMap = {
-                'Animals': 'animalId',
-                'Zookeepers': 'keeperId',  // FIXED: was trying to use 'zookeeperId'
-                'Enclosures': 'enclosureId',
-                'Species': 'speciesId',
-                'Assignments': null // handled differently
-            };
-
-            const idField = idFieldMap[entity];
-            const id = record[idField];
-
-            // Debug: log to see what we're sending
-            console.log('Updating:', entity, 'ID:', id, 'Data:', formData);
-
-            const fieldsToUpdate = editableFields[entity] || [];
-            const updatedData = {};
-            fieldsToUpdate.forEach(field => {
-                if (formData[field] !== undefined && formData[field] !== null) {
-                    updatedData[field] = formData[field];
-                }
-            });
-
-            const response = await fetch(`${BACKEND_URL}/api/${entity}/${id}`, {
-                method: 'PUT',
+            const response = await fetch(`${BACKEND_URL}/api/${entity}`, {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedData),
+                body: JSON.stringify(formData),
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to update: ${errorText}`);
+                throw new Error(`Failed to add`);
             }
-            
             await onSave();
         } catch (err) {
-            console.error('Update error:', err);
             setError(err.message);
         }
     };
 
     const renderField = (key) => {
-        // Date fields
-        if (key === 'dateOfBirth' || key === 'hireDate') {
-            return (
-                <input
-                    type="date"
-                    name={key}
-                    value={formData[key] || ''}
-                    onChange={handleChange}
-                    style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
-                />
-            );
-        }
-
-        // Number fields
-        if (key === 'maximumCapacity') {
-            return (
-                <input
-                    type="number"
-                    name={key}
-                    value={formData[key] || ''}
-                    onChange={handleChange}
-                    style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
-                />
-            );
-        }
-        
-        // Species dropdown for Animals
         if (key === 'speciesId' && entity === 'Animals') {
             return (
                 <select
                     name={key}
                     value={formData[key] || ''}
                     onChange={handleChange}
+                    required
                     style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
                 >
                     <option value="">Select Species</option>
@@ -155,13 +87,13 @@ function EditForm({ entity, record, onCancel, onSave }) {
             );
         }
         
-        // Enclosure dropdown
         if (key === 'enclosureId') {
             return (
                 <select
                     name={key}
                     value={formData[key] || ''}
                     onChange={handleChange}
+                    required
                     style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
                 >
                     <option value="">Select Enclosure</option>
@@ -174,13 +106,13 @@ function EditForm({ entity, record, onCancel, onSave }) {
             );
         }
         
-        // Keeper dropdown for Assignments
         if (key === 'keeperId' && entity === 'Assignments') {
             return (
                 <select
                     name={key}
                     value={formData[key] || ''}
                     onChange={handleChange}
+                    required
                     style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
                 >
                     <option value="">Select Zookeeper</option>
@@ -193,13 +125,39 @@ function EditForm({ entity, record, onCancel, onSave }) {
             );
         }
 
-        // Sex dropdown for Animals
+        if (key === 'dateOfBirth' || key === 'hireDate') {
+            return (
+                <input
+                    type="date"
+                    name={key}
+                    value={formData[key] || ''}
+                    onChange={handleChange}
+                    required
+                    style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
+                />
+            );
+        }
+
+        if (key === 'maximumCapacity') {
+            return (
+                <input
+                    type="number"
+                    name={key}
+                    value={formData[key] || ''}
+                    onChange={handleChange}
+                    required
+                    style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
+                />
+            );
+        }
+
         if (key === 'sex') {
             return (
                 <select
                     name={key}
                     value={formData[key] || ''}
                     onChange={handleChange}
+                    required
                     style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
                 >
                     <option value="">Select Sex</option>
@@ -209,23 +167,23 @@ function EditForm({ entity, record, onCancel, onSave }) {
             );
         }
 
-        // Default: text input
         return (
             <input
                 type="text"
                 name={key}
                 value={formData[key] || ''}
                 onChange={handleChange}
+                required
                 style={{ marginLeft: '10px', width: '300px', padding: '5px' }}
             />
         );
     };
 
-    const fieldsToShow = editableFields[entity] || [];
+    const fieldsToShow = addableFields[entity] || [];
 
     return (
-        <div style={{ border: '2px solid #333', padding: '20px', margin: '10px 0', backgroundColor: '#f9f9f9' }}> 
-            <h3>Edit {entity}</h3>
+        <div style={{ border: '2px solid #333', padding: '20px', margin: '10px 0', backgroundColor: '#f0f0f0' }}>
+            <h3>Add New {entity}</h3>
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
             
             <form onSubmit={handleSubmit}>
@@ -238,11 +196,11 @@ function EditForm({ entity, record, onCancel, onSave }) {
                     </div>
                 ))}
 
-                <button type="submit" style={{ padding: '8px 16px' }}>Save</button>
+                <button type="submit" style={{ padding: '8px 16px' }}>Add</button>
                 <button type="button" onClick={onCancel} style={{ marginLeft: '10px', padding: '8px 16px' }}>Cancel</button>
             </form>
         </div>
     );
 }
 
-export default EditForm;
+export default AddForm;
