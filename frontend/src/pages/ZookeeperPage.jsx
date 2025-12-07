@@ -6,7 +6,6 @@ function ZookeeperPage(){
         <>
             <h1>Zookeepers:</h1>
             <GetData entity={"Zookeepers"}></GetData>
-            <button>Add Zookeeper</button>
         </>    
     )
 }

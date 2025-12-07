@@ -6,7 +6,6 @@ function EnclosureAssignmentsPage(){
         <>
             <h1>EnclosureAssignments:</h1>
             <GetData entity={"Assignments"}></GetData>
-            <button>Add EnclosureAssignment</button>
         </>    
     )
 }

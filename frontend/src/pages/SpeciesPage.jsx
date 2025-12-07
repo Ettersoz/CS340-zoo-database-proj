@@ -6,7 +6,6 @@ function SpeciesPage(){
         <>
             <h1>Species:</h1>
             <GetData entity={"Species"}></GetData>
-            <button>Add Species</button>
         </>    
     )
 }
