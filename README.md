@@ -70,3 +70,10 @@ Claude AI (Anthropic) was used to generate these stored procedures based on the 
 
    Prompt: "Create a MySQL stored procedure to delete an enclosure assignment by the
    composite key (keeperId, enclosureId). Return ROW_COUNT() or -99 on error."
+
+CITATIONS FOR ALL OF THE FILES BASED ON CLASS HANDOUTS/ACITIVITIES
+
+// Citation for the following files: SERVER.JS, DB-CONNECTOR.JS, APP.JSX, REACTSERVER.JS
+// Date: 12/07/2024
+// Based on:
+// Source URL: https://canvas.oregonstate.edu/courses/2017561/assignments/10111722?module_item_id=25645065
